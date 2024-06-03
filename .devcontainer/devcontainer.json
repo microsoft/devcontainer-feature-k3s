@@ -1,0 +1,26 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+	"name": "k3s-on-host",
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu22.04",
+	"runArgs": [
+		"--name",
+		"k3s-on-host"
+	],
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker":{},
+		"./features/k3s-on-host": {
+		}
+	},
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"rogalmic.bash-debug"
+			]
+		}
+	},
+	"remoteUser": "root"
+}
