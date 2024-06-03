@@ -1,0 +1,46 @@
+{
+  "name": "Install k3s on host",
+  "id": "k3s-on-host",
+  "version": "1.0.0",
+  "description": "Install k3s on the devcontainer host and configure the devcontainer to use it",
+  "documentationURL": "https://github.com/microsoft/devcontainer-feature-k3s",
+  "options": {
+    "k3sVersion": {
+      "type": "string",
+      "enum": [
+        "latest"
+      ],
+      "default": "latest",
+      "description": "Choose the version of k3s to install on the host"
+    },
+    "criDockerd": {
+      "type": "boolean",
+      "default": true,
+      "description": "Use the cri-dockerd plugin for k3s"
+    }
+  },
+  "entrypoint": "",
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  },
+  "mounts": [
+    {
+      "source": "/var",
+      "target": "/host_var",
+      "type": "bind"
+    },
+    {
+      "source": "/var/run/docker.sock",
+      "target": "/var/run/docker-host.sock",
+      "type": "bind"
+    }
+  ],
+  "privileged": true,
+  "containerEnv": {
+    "KUBECONFIG": "/k3s-on-host/k3s.devcontainer.yaml",
+    "INSTALLDOCKERBUILDX": "false"
+  },
+  "updateContentCommand": "/k3s-on-host/updateContent.sh"
+}
