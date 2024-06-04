@@ -42,5 +42,8 @@
     "KUBECONFIG": "/k3s-on-host/k3s.devcontainer.yaml",
     "INSTALLDOCKERBUILDX": "false"
   },
+  "installsAfter":[
+    "ghcr.io/devcontainers/features/docker-outside-of-docker"
+  ],
   "updateContentCommand": "/k3s-on-host/updateContent.sh"
 }
