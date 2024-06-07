@@ -20,7 +20,8 @@ kube-system   metrics-server-557ff575fb-6t882           1/1     Running     0   
 "features": {
     "ghcr.io/microsoft/k3s-on-host":{
         "k3sVersion": "latest",
-        "criDockerd": "true"
+        "criDockerd": "true",
+        "cluster_enabled": "true"
     }
 }
 ```
@@ -31,6 +32,7 @@ kube-system   metrics-server-557ff575fb-6t882           1/1     Running     0   
 |-----|-----|-----|-----|
 | k3sVersion | Select or enter the k3s version | string | latest |
 | criDockerd | Deploy k3s with the cri-dockerd configured  | boolean | true |
+| cluster_enabled | Disable provisioning of the cluster.  This is useful in CI/CD scenarios that reference this devcontainer feature, but doesn't always need the kubernetes cluster deployed.  | boolean | true |
 
 ## Build and Deploying
 
@@ -92,3 +94,4 @@ trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
+

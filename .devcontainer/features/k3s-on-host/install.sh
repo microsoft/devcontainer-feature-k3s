@@ -10,6 +10,7 @@ K3S_VERSION="${K3SVERSION:-"latest"}"
 USE_CRI_DOCKERD="${CRIDOCKERD:-"true"}"
 HOST_INTERFACE_CONTAINER="host_interface"
 HOST_INTERFACE_CONTAINER_BASE="mcr.microsoft.com/devcontainers/base:ubuntu22.04"
+CLUSTER_ENABLED="${CLUSTER_ENABLED:-"true"}"
 
 # Ensure apt is in non-interactive to avoid prompts
 export DEBIAN_FRONTEND=noninteractive
@@ -20,7 +21,7 @@ set -e
 rm -rf /var/lib/apt/lists/*
 
 if [ "$(id -u)" -ne 0 ]; then
-    echo -e 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
+    echo -e 'Devcontainer feature requires root.  Add "remoteuser":"root" to your devcontainer.json'
     exit 1
 fi
 
@@ -54,18 +55,18 @@ K3S_ARCHITECTURE=$ARCHITECTURE
 ############################################################
 function build_dest_directory() {
 
-    echo "Creating /k3s-on-host directory..."
-    mkdir -p "/k3s-on-host"
+    echo "Creating /devfeature/k3s-on-host directory..."
+    mkdir -p "/devfeature/k3s-on-host"
 
-    mkdir -p "/host_var/tmp/k3s-on-host"
+    mkdir -p "/host_var/tmp/devfeature/k3s-on-host"
 
-    echo "Creating /k3s-on-host/.env file..."
-    tee /k3s-on-host/.env -a > /dev/null << UPDATE_END
+    echo "Creating /devfeature/k3s-on-host/.env file..."
+    tee /devfeature/k3s-on-host/.env -a > /dev/null << UPDATE_END
 export _REMOTE_USER=${_REMOTE_USER}
 export _REMOTE_USER_HOME=${_REMOTE_USER_HOME}
 export _CONTAINER_USER=${_CONTAINER_USER}
+export CLUSTER_ENABLED=${CLUSTER_ENABLED}
 export K3S_VERSION=${K3S_VERSION}
-export KUBECTL_VERSION=${KUBECTL_VERSION}
 export USE_CRI_DOCKERD=${USE_CRI_DOCKERD}
 export ARCHITECTURE=${ARCHITECTURE}
 export HOST_INTERFACE_CONTAINER=${HOST_INTERFACE_CONTAINER}
@@ -74,14 +75,14 @@ export HOST_INTERFACE_CONTAINER_BASE=${HOST_INTERFACE_CONTAINER_BASE}
 UPDATE_END
 
 
-    echo "Copying scripts to /k3s-on-host/..."
-    cp ./*.sh /k3s-on-host/
+    echo "Copying scripts to /devfeature/k3s-on-host/..."
+    cp ./*.sh /devfeature/k3s-on-host/
 
 
     while read -r shellFile; do
         chmod +x ${shellFile}
         chmod 777 ${shellFile}
-    done < <(find "/k3s-on-host" -iname "*.sh")
+    done < <(find "/devfeature/k3s-on-host" -iname "*.sh")
 
 }
 

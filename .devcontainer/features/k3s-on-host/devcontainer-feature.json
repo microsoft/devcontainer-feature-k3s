@@ -39,11 +39,11 @@
   ],
   "privileged": true,
   "containerEnv": {
-    "KUBECONFIG": "/k3s-on-host/k3s.devcontainer.yaml",
+    "KUBECONFIG": "/devfeature/k3s-on-host/k3s.devcontainer.yaml",
     "INSTALLDOCKERBUILDX": "false"
   },
   "dependsOn":{
     "ghcr.io/devcontainers/features/docker-outside-of-docker":{}
   },
-  "updateContentCommand": "/k3s-on-host/updateContent.sh"
+  "updateContentCommand": "/devfeature/k3s-on-host/updateContent.sh"
 }
