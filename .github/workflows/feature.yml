@@ -2,7 +2,7 @@ name: k3s-on-host
 
 on:
   push:
-    branches: [ km/adding_action ]
+    branches: [ main ]
 
 env:
     REGISTRY: ghcr.io
