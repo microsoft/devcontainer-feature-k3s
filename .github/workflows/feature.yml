@@ -1,0 +1,76 @@
+name: k3s-on-host
+
+on:
+  push:
+    branches: [ km/adding_action ]
+
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+    build-package-feature:
+        runs-on: ubuntu-latest
+    
+        permissions:
+            contents: read
+            packages: write
+    
+        steps:
+        - uses: actions/checkout@v2
+
+            
+        - name: Install devcontainer cli
+          run: |
+            npm install -g @devcontainers/cli
+            devcontainer --version
+            printenv
+
+        - name: Install oras
+          run: |
+            curl -LO https://github.com/oras-project/oras/releases/download/v0.16.0/oras_0.16.0_linux_amd64.tar.gz
+            mkdir -p oras-install/
+            tar -zxf oras_0.16.0_*.tar.gz -C oras-install/
+            mv oras-install/oras /usr/local/bin/
+            rm -rf oras_0.16.0_*.tar.gz oras-install/
+
+        - name: Log in to the Container registry
+          uses: docker/login-action@v3
+          with:
+            registry: ${{ env.REGISTRY }}
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Building Feature Package
+          run: |
+            mkdir -p ./output
+
+            echo "devcontainer features package --force-clean-output-folder ./.devcontainer/features --output-folder ./output"
+            devcontainer features package --force-clean-output-folder ./.devcontainer/features --output-folder ./output
+            sub_exit_code=${PIPESTATUS[0]}
+            if [[ $sub_exit_code -gt 0 ]]; then
+                echo "Previous step failed.  Troubleshoot"
+                exit 1
+            fi
+
+        - name: Pushing Feature Package
+          run: |
+            echo "oras push ${{ env.REGISTRY }}/microsoft/devcontainers/features/k3s-on-host:latest --config /dev/null:application/vnd.devcontainers ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.layer.v1+tar"
+            oras push ${{ env.REGISTRY }}/microsoft/devcontainers/features/k3s-on-host:latest \
+              --config /dev/null:application/vnd.devcontainers \
+                      ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.layer.v1+tar
+            sub_exit_code=${PIPESTATUS[0]}
+            if [[ $sub_exit_code -gt 0 ]]; then
+                echo "Previous step failed.  Troubleshoot"
+                exit 1
+            fi
+      
+            echo "oras push ${{ env.REGISTRY }}/microsoft/devcontainers/features/k3s-on-host:latest --config /dev/null:application/vnd.devcontainers ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.collection.layer.v1+json"
+            oras push ${{ env.REGISTRY }}/microsoft/devcontainers/features/k3s-on-host:latest \
+              --config /dev/null:application/vnd.devcontainers \
+                      ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.collection.layer.v1+json
+            sub_exit_code=${PIPESTATUS[0]}
+            if [[ $sub_exit_code -gt 0 ]]; then
+                echo "Previous step failed.  Troubleshoot"
+                exit 1
+            fi
