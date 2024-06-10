@@ -76,7 +76,8 @@ function run_a_script_on_host() {
                 -ti \
                 --privileged \
                 $HOST_INTERFACE_CONTAINER \
-                chroot /host bash -c \"${run_script}\""
+                --workdir /host \
+                bash -c \"${run_script}\""
 
 
     if [[ "${log_enabled}" == true ]]; then
@@ -346,6 +347,13 @@ function host_interface_setup() {
         $HOST_INTERFACE_CONTAINER_BASE \
         chroot /host \
         bash --login -c 'while sleep 1000; do :; done'" --disable_log
+
+    debug_log "Listing containers"
+
+
+    run_a_script "docker container ls"
+
+
 }
 
 
@@ -392,8 +400,6 @@ function install_k3s() {
     fi
 
     run_a_script "chmod +x /host_var/tmp/devfeature/k3s-on-host/k3s_install.sh" --disable_log
-
-    run_a_script_on_host "ls /var/tmp/"
 
     info_log "Installing k3s on host..."
     run_a_script_on_host "/var/tmp/devfeature/k3s-on-host/k3s_install.sh ${k3s_extra_commands}" --env INSTALL_K3S_VERSION=${K3S_VERSION} --env INSTALL_K3S_SYMLINK=force
