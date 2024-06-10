@@ -55,8 +55,8 @@ jobs:
 
         - name: Pushing Feature Package
           run: |
-            echo "oras push ${{ env.REGISTRY }}/${{ github.repository }}:latest --config /dev/null:application/vnd.devcontainers ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.layer.v1+tar"
-            oras push ${{ env.REGISTRY }}/${{ github.repository }}:latest \
+            echo "oras push ${{ env.REGISTRY }}/${{ github.repository }}/k3s-on-host:latest --config /dev/null:application/vnd.devcontainers ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.layer.v1+tar"
+            oras push ${{ env.REGISTRY }}/${{ github.repository }}/k3s-on-host:latest \
               --config /dev/null:application/vnd.devcontainers \
                       ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.layer.v1+tar
             sub_exit_code=${PIPESTATUS[0]}
@@ -66,7 +66,7 @@ jobs:
             fi
       
             echo "oras push ${{ env.REGISTRY }}/${{ github.repository }}:latest --config /dev/null:application/vnd.devcontainers ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.collection.layer.v1+json"
-            oras push ${{ env.REGISTRY }}/${{ github.repository }}:latest \
+            oras push ${{ env.REGISTRY }}/${{ github.repository }}/k3s-on-host:latest \
               --config /dev/null:application/vnd.devcontainers \
                       ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.collection.layer.v1+json
             sub_exit_code=${PIPESTATUS[0]}
