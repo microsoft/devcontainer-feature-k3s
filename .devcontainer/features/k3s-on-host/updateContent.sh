@@ -71,13 +71,17 @@ function run_a_script_on_host() {
 
     local run_cmd
 
-    run_cmd="docker exec \
-                ${env_vars} \
-                -ti \
-                --privileged \
-                $HOST_INTERFACE_CONTAINER \
-                --workdir /host \
-                bash -c \"${run_script}\""
+    run_cmd="docker run \
+        --quiet \
+        --privileged \
+        --tty \
+        --rm \
+        --cap-add=SYS_CHROOT \
+        --name $HOST_INTERFACE_CONTAINER \
+        --net=host --pid=host --ipc=host \
+        --volume /:/host \
+        $HOST_INTERFACE_CONTAINER_BASE \
+        chroot /host bash --login -c \"${run_script}\""
 
 
     if [[ "${log_enabled}" == true ]]; then
@@ -321,47 +325,8 @@ function host_interface_setup() {
         exit_with_error "Docker is not in the devcontainer.  Please add the docker feature 'ghcr.io/devcontainers/features/docker-outside-of-docker' to your devcontainer.json / features and rebuild the container."
     fi
 
-    # Check if the container is running
-    run_a_script "docker ps --all --filter \"name=$HOST_INTERFACE_CONTAINER\" --format \"{{.State}}\"" host_interface_status --disable_log --ignore_error
+    run_a_script "docker pull $HOST_INTERFACE_CONTAINER_BASE"
 
-    if [[ "${host_interface_status}" == "exited" ]]; then
-        debug_log "Removing stopped container $HOST_INTERFACE_CONTAINER..."
-        run_a_script "docker rm $HOST_INTERFACE_CONTAINER" --disable_log
-    fi
-
-    if [[ "${host_interface_status}" == "running" ]]; then
-        info_log "Container $HOST_INTERFACE_CONTAINER is already running."
-        return
-    fi
-
-    info_log "Starting container $HOST_INTERFACE_CONTAINER to interact with the host..."
-
-    run_a_script "docker run \
-        --quiet \
-        --privileged \
-        --detach \
-        --tty \
-        --name $HOST_INTERFACE_CONTAINER \
-        --net=host --pid=host --ipc=host \
-        --volume /:/host \
-        $HOST_INTERFACE_CONTAINER_BASE \
-        chroot /host \
-        bash --login -c 'while sleep 1000; do :; done'" --disable_log
-
-    debug_log "Listing containers"
-
-
-    run_a_script "docker container ls"
-
-
-}
-
-
-# Checks if packages are installed and installs them if not
-function check_packages() {
-    if ! dpkg -s "$@" > /dev/null 2>&1; then
-        run_a_script "apt-get update && apt-get -y install --no-install-recommends $@"
-    fi
 }
 
 ############################################################
@@ -494,14 +459,14 @@ function check_kubeconfig_in_bashrc(){
 
     # If the grep results are empty, then add the export KUBECONFIG to the .bashrc
     if [[ -z "${grep_results}" ]]; then
-    info_log "...adding 'export KUBECONFIG=${KUBECONFIG}' to ${HOME}/.bashrc"
+        info_log "...adding 'export KUBECONFIG=${KUBECONFIG}' to ${HOME}/.bashrc"
         run_a_script "tee -a ${HOME}/.bashrc > /dev/null << UPDATE_END
 export KUBECONFIG=$KUBECONFIG
 UPDATE_END"
+        info_log "...successfully added 'export KUBECONFIG' to '${HOME}/.bashrc'"
+    else
+        info_log "...'export KUBECONFIG' already exists in '${HOME}/.bashrc'.  Nothing to do"
     fi
-
-
-    info_log "...successfully added 'export KUBECONFIG' to '${HOME}/.bashrc'"
 
     info_log "FINISHED: ${FUNCNAME[0]}"
 }
@@ -512,7 +477,10 @@ function main() {
 
     reset_log
     host_interface_setup
-    check_packages apt-transport-https curl jq yq
+
+    run_a_script "apt-get update"
+    run_a_script "apt-get -y install --no-install-recommends apt-transport-https curl jq"
+
     install_k3s
     install_kubectl
     gen_kubeconfig_for_devcontainer
