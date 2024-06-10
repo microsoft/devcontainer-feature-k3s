@@ -37,7 +37,7 @@ jobs:
         - name: Building Feature Package
           run: |
             mkdir -p ./output
-            rm ./output/*
+
             echo "devcontainer features package --force-clean-output-folder ./.devcontainer/features --output-folder ./output"
             devcontainer features package --force-clean-output-folder ./.devcontainer/features --output-folder ./output
             sub_exit_code=${PIPESTATUS[0]}
