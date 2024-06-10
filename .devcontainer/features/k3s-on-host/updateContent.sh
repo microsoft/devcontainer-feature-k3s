@@ -74,6 +74,7 @@ function run_a_script_on_host() {
     run_cmd="docker exec \
                 ${env_vars} \
                 -ti \
+                --privileged \
                 $HOST_INTERFACE_CONTAINER \
                 chroot /host bash -c \"${run_script}\""
 
