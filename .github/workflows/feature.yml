@@ -49,7 +49,7 @@ jobs:
         - name: Pushing Feature Package
           run: |
             echo "oras push ${{ github.repository }}:latest --config /dev/null:application/vnd.devcontainers ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.layer.v1+tar"
-            oras push ${{ github.repository }}/$(FEATURE_NAME):latest \
+            oras push ${{ github.repository }}:latest \
               --config /dev/null:application/vnd.devcontainers \
                       ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.layer.v1+tar
             sub_exit_code=${PIPESTATUS[0]}
@@ -58,10 +58,10 @@ jobs:
                 exit 1
             fi
       
-            echo "oras push ${{ github.repository }}:latest --config /dev/null:application/vnd.devcontainers ./output/$(FEATURE_DEVCONTAINER_COLLECTION_FILE_NAME):application/vnd.devcontainers.collection.layer.v1+json"
+            echo "oras push ${{ github.repository }}:latest --config /dev/null:application/vnd.devcontainers ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.collection.layer.v1+json"
             oras push ${{ github.repository }}:latest \
               --config /dev/null:application/vnd.devcontainers \
-                      ./output/$(FEATURE_DEVCONTAINER_COLLECTION_FILE_NAME):application/vnd.devcontainers.collection.layer.v1+json
+                      ./output/devcontainer-feature-k3s-on-host.tgz:application/vnd.devcontainers.collection.layer.v1+json
             sub_exit_code=${PIPESTATUS[0]}
             if [[ $sub_exit_code -gt 0 ]]; then
                 echo "Previous step failed.  Troubleshoot"
