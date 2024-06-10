@@ -385,12 +385,14 @@ function install_k3s() {
         run_a_script "curl --silent --fail --create-dirs --output /host_var/tmp/devfeature/k3s-on-host/k3s_install.sh -L https://get.k3s.io"
     fi
 
-    if [[ "${USE_CRI_DOCKERD}"==true ]]; then
+    if [[ "${USE_CRI_DOCKERD}" == true ]]; then
         debug_log "Adding cri-dockerd to k3s install command..."
         k3s_extra_commands="${k3s_extra_commands} --docker"
     fi
 
     run_a_script "chmod +x /host_var/tmp/devfeature/k3s-on-host/k3s_install.sh" --disable_log
+
+    run_a_script_on_host "cat /var/tmp/devfeature/k3s-on-host/k3s_install.sh"
 
     info_log "Installing k3s on host..."
     run_a_script_on_host "/var/tmp/devfeature/k3s-on-host/k3s_install.sh ${k3s_extra_commands}" --env INSTALL_K3S_VERSION=${K3S_VERSION} --env INSTALL_K3S_SYMLINK=force
