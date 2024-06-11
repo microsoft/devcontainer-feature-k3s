@@ -183,6 +183,20 @@ function run_a_script() {
 }
 
 ############################################################
+# Pretty writes a parameter to the log file
+############################################################
+function write_parameter_to_log() {
+    local parameter=$1
+    local parameter_value=${!1}
+    max_key_length=40
+
+    parameter_value="${parameter_value// /}" # remove blank spaces from value
+    padding=$((max_key_length - ${#parameter}))
+    spaces=$(printf "%-${padding}s" " ")
+    info_log "${parameter}:${spaces}${parameter_value}"
+}
+
+############################################################
 # Reset the log file by renaming it with a timestamp and
 # creating a new empty log file
 ############################################################
@@ -474,6 +488,17 @@ UPDATE_END"
 
 function main() {
     [[ "${CLUSTER_ENABLED}" == "false" ]] && return
+
+    info_log "START: ${SCRIPT_NAME}"
+    info_log "------------------------------------------"
+    info_log "Config:"
+    write_parameter_to_log PWD
+
+    current_tty=$(tty)
+
+    write_parameter_to_log current_tty
+
+
 
     reset_log
     host_interface_setup
