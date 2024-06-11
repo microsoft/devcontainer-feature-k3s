@@ -489,6 +489,8 @@ UPDATE_END"
 function main() {
     [[ "${CLUSTER_ENABLED}" == "false" ]] && return
 
+    reset_log
+
     info_log "START: ${SCRIPT_NAME}"
     info_log "------------------------------------------"
     info_log "Config:"
@@ -498,9 +500,6 @@ function main() {
 
     write_parameter_to_log current_tty
 
-
-
-    reset_log
     host_interface_setup
 
     run_a_script "apt-get update"
