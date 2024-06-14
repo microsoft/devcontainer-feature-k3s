@@ -1,0 +1,14 @@
+{
+	"name": "k3s-on-host",
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu22.04",
+	"runArgs": [
+		"--name",
+		"k3s-on-host"
+	],
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker": {},
+		"../../.devcontainer/./features/k3s-on-host": {
+		}
+	},
+	"remoteUser": "root"
+}

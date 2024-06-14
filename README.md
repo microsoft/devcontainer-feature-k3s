@@ -5,13 +5,20 @@ A devcontainer feature that will install and configure a kubernetes cluster (k3s
 ```bash
 $ kubectl get pods -A
 NAMESPACE     NAME                                      READY   STATUS      RESTARTS   AGE
-kube-system   coredns-576bfc4dc7-r76cs                  1/1     Running     0          101m
-kube-system   local-path-provisioner-75bb9ff978-hbxsq   1/1     Running     0          101m
-kube-system   helm-install-traefik-crd-rtnrs            0/1     Completed   0          101m
-kube-system   svclb-traefik-c6687f4a-fwdhl              2/2     Running     0          101m
-kube-system   helm-install-traefik-qtddd                0/1     Completed   1          101m
-kube-system   traefik-5fb479b77-k299x                   1/1     Running     0          101m
-kube-system   metrics-server-557ff575fb-6t882           1/1     Running     0          101m
+kube-system   coredns-576bfc4dc7-r76cs                  1/1     Running     0          2m
+kube-system   local-path-provisioner-75bb9ff978-hbxsq   1/1     Running     0          2m
+kube-system   helm-install-traefik-crd-rtnrs            0/1     Completed   0          2m
+kube-system   svclb-traefik-c6687f4a-fwdhl              2/2     Running     0          2m
+kube-system   helm-install-traefik-qtddd                0/1     Completed   1          2m
+kube-system   traefik-5fb479b77-k299x                   1/1     Running     0          2m
+kube-system   metrics-server-557ff575fb-6t882           1/1     Running     0          2m
+```
+
+The devcontainer feature also generates a KUBECONFIG yaml at `/devfeature/k3s-on-host/k3s.devcontainer.yaml` and updates the `KUBECONFIG` environment variable to enable applications like kubectl and helm.
+
+```bash
+$ echo $KUBECONFIG
+/devfeature/k3s-on-host/k3s.devcontainer.yaml
 ```
 
 ## Example Usage
@@ -33,6 +40,15 @@ kube-system   metrics-server-557ff575fb-6t882           1/1     Running     0   
 | k3sVersion | Select or enter the k3s version | string | latest |
 | criDockerd | Deploy k3s with the cri-dockerd configured  | boolean | true |
 | cluster_enabled | Disable provisioning of the cluster.  This is useful in CI/CD scenarios that reference this devcontainer feature, but doesn't always need the kubernetes cluster deployed.  | boolean | true |
+
+## Testing
+
+Testing the feature can be done by running the `./test/test.sh` script.  A devcontainer will be deployed with and without cridocker and namespaces tested.
+```bash
+$ ./test/test.sh
+```
+
+
 
 ## Build and Deploying
 
