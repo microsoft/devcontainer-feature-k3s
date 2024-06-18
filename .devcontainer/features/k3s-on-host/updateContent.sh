@@ -438,7 +438,7 @@ function gen_kubeconfig_for_devcontainer() {
 
     debug_log "...external ip: '${host_ip}'"
 
-    run_a_script_on_host "kubectl config view --flatten=true" kubeconfig --disable_log
+    run_a_script_on_host "kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml config view --flatten=true" kubeconfig --disable_log
 
     # Update kubeconfig to use the external ip of the host instead of the default 127.0.0.1
     kubeconfig="${kubeconfig/127.0.0.1/${host_ip}}"
@@ -495,10 +495,6 @@ function main() {
     info_log "------------------------------------------"
     info_log "Config:"
     write_parameter_to_log PWD
-
-    current_tty=$(tty)
-
-    write_parameter_to_log current_tty
 
     host_interface_setup
 
