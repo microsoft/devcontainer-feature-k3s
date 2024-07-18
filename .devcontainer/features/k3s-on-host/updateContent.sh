@@ -447,6 +447,14 @@ function gen_kubeconfig_for_devcontainer() {
 ${kubeconfig}
 UPDATE_END" --disable_log
 
+    # Write the local kubeconfig to the default location in the devcontainer
+    [[ ! -d "/etc/rancher/k3s" ]] && run_a_script "mkdir -p /etc/rancher/k3s" --disable_log
+
+    run_a_script "tee /etc/rancher/k3s/k3s.yaml > /dev/null << UPDATE_END
+${kubeconfig}
+UPDATE_END" --disable_log
+
+
     info_log "Generated '$KUBECONFIG'."
     info_log "END: ${FUNCNAME[0]}"
 
