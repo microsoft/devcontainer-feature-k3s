@@ -443,9 +443,16 @@ function gen_kubeconfig_for_devcontainer() {
     # Update kubeconfig to use the external ip of the host instead of the default 127.0.0.1
     kubeconfig="${kubeconfig/127.0.0.1/${host_ip}}"
 
-    run_a_script "tee $KUBECONFIG > /dev/null << UPDATE_END
+    if [[ -n "${KUBECONFIG}" ]] && [[ "${KUBECONFIG}" != "/etc/rancher/k3s/k3s.yaml" ]]; then
+        debug_log "Detected custom KUBECONFIG.  Writing to custom location: '${KUBECONFIG}'"
+        kubeconfigDir="$(dirname "${KUBECONFIG}")"
+        [[ ! -d "${kubeconfigDir}" ]] && run_a_script "mkdir -p ${kubeconfigDir}" --disable_log
+
+        run_a_script "tee $KUBECONFIG > /dev/null << UPDATE_END
 ${kubeconfig}
 UPDATE_END" --disable_log
+
+    fi
 
     # Write the local kubeconfig to the default location in the devcontainer
     [[ ! -d "/etc/rancher/k3s" ]] && run_a_script "mkdir -p /etc/rancher/k3s" --disable_log
